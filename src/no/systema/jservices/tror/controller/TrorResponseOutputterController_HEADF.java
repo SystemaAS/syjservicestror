@@ -45,7 +45,7 @@ public class TrorResponseOutputterController_HEADF {
 		try {
 			String user = request.getParameter("user");
 			String csv = request.getParameter("csv");
-			// Check ALWAYS user in BRIDF
+			// Check ALWAYS user in BRIDF, newsdfsdfsdfsdfsdfsd
 			String userName = bridfDaoService.getUserName(user); 
 			String errMsg = "";
 			String status = "ok";
