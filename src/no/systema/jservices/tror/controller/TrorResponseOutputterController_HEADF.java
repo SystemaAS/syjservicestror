@@ -31,7 +31,7 @@ public class TrorResponseOutputterController_HEADF {
 	/**
 	 * File: 	HEADF
 	 * 
-	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&csv=true
+	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&csv=true&limit=50
 	 * 
 	 */
 	@RequestMapping(value="syjsHEADF.do", method={RequestMethod.GET, RequestMethod.POST})
@@ -45,6 +45,8 @@ public class TrorResponseOutputterController_HEADF {
 		try {
 			String user = request.getParameter("user");
 			String csv = request.getParameter("csv");
+			String limit = request.getParameter("limit");
+			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
 			String errMsg = "";
@@ -52,7 +54,12 @@ public class TrorResponseOutputterController_HEADF {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if ((userName != null && !"".equals(userName))) {
-				headfDaoList = headfDaoService.findAll(null);
+				if(StringUtils.hasValue(limit)){
+					//discrete number of rows
+					headfDaoList = headfDaoService.findAll(null, limit);
+				}else{
+					headfDaoList = headfDaoService.findAll(null);
+				}
 				if (headfDaoList != null) {
 					if (StringUtils.hasValue(csv)) {
 						sb.append(csvOutputter.writeAsString(headfDaoList));

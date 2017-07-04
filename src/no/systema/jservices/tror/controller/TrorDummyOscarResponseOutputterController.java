@@ -34,7 +34,7 @@ public class TrorDummyOscarResponseOutputterController {
 	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&csv=true
 	 * 
 	 */
-	@RequestMapping(value="syjsHEADF.do", method={RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value="syjsHEADFFUCKIT.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
 	public String doHeadf(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<HeadfDao> jsonWriter = new JsonResponseWriter2<HeadfDao>();
