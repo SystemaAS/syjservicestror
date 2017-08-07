@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import no.systema.jservices.common.dao.HeadfDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.HeadfDaoService;
+import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
 import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
@@ -43,6 +45,7 @@ public class TrorResponseOutputterController_HEADF {
 		List<HeadfDao> headfDaoList = null;
 		
 		try {
+			logger.info("Inside syjsHEADF.do");		
 			String user = request.getParameter("user");
 			String csv = request.getParameter("csv");
 			String limit = request.getParameter("limit");
@@ -92,7 +95,58 @@ public class TrorResponseOutputterController_HEADF {
 
 	}
 
-	
+	/**
+	 * File: 	HEADF
+	 * 
+	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF_LITE.do?user=OSCAR&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna
+	 * 
+	 */
+	@RequestMapping(value="syjsHEADF_LITE.do", method={RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public String doHeadfLiteList(HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter2<HeadfDto> jsonWriter = new JsonResponseWriter2<HeadfDto>();
+		StringBuffer sb = new StringBuffer();
+		List<HeadfDto> headfDtoList = null;
+		
+		try {
+			logger.info("Inside syjsHEADF_LITE.do");		
+			String user = request.getParameter("user");
+			String userName = bridfDaoService.getUserName(user); 
+			String errMsg = "";
+			String status = "ok";
+			StringBuffer dbErrorStackTrace = new StringBuffer();
+			if (StringUtils.hasValue(userName)) {
+				HeadfDto qDto = new HeadfDto();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
+	            binder.bind(request);
+	            headfDtoList = headfDaoService.get(qDto);
+				if (headfDtoList != null) {
+					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, headfDtoList));
+				} else {
+					errMsg = "ERROR on SELECT: Can not find HeadfDto list";
+					status = "error";
+					logger.info( status + errMsg);
+					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+				}
+			} else {
+				errMsg = "ERROR on SELECT";
+				status = "error";
+				dbErrorStackTrace.append(" request input parameters are invalid: <user>");
+				sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+			}
+		} catch (Exception e) {
+			logger.info("Error :", e);
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			e.printStackTrace(printWriter);
+			return "ERROR [JsonResponseOutputterController]" + writer.toString();
+		}
+
+		session.invalidate();
+		return sb.toString();
+
+	}
+
 	@Qualifier ("bridfDaoService")
 	private BridfDaoService bridfDaoService;
 	@Autowired
