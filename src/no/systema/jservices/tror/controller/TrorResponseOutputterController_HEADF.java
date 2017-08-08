@@ -98,7 +98,7 @@ public class TrorResponseOutputterController_HEADF {
 	/**
 	 * File: 	HEADF
 	 * 
-	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF_LITE.do?user=OSCAR&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna
+	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF_LITE.do?user=OSCAR&limit=50&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna
 	 * 
 	 */
 	@RequestMapping(value="syjsHEADF_LITE.do", method={RequestMethod.GET, RequestMethod.POST})
@@ -116,11 +116,10 @@ public class TrorResponseOutputterController_HEADF {
 			String status = "ok";
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 			if (StringUtils.hasValue(userName)) {
-				HeadfDto qDto = new HeadfDto();
-				ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
-	            binder.bind(request);
+				HeadfDto qDto = null;
+	            qDto = getDto(request);
 	            headfDtoList = headfDaoService.get(qDto);
-				if (headfDtoList != null) {
+	            if (headfDtoList != null) {
 					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, headfDtoList));
 				} else {
 					errMsg = "ERROR on SELECT: Can not find HeadfDto list";
@@ -145,6 +144,30 @@ public class TrorResponseOutputterController_HEADF {
 		session.invalidate();
 		return sb.toString();
 
+	}
+
+	private HeadfDto getDto(HttpServletRequest request) {
+		String WILD_CARD = "%";
+		int DEFAULT_ROW_LIMIT = 500;
+		HeadfDto qDto = new HeadfDto();
+		ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
+        binder.bind(request);
+
+        if (qDto.getHenas() != null)  {
+        	qDto.setHenas(WILD_CARD+qDto.getHenas()+WILD_CARD);
+        }
+        if (qDto.getHenak() != null) {
+        	qDto.setHenak(WILD_CARD+qDto.getHenak()+WILD_CARD); 
+        }
+        if (qDto.getHesg() != null) {
+        	qDto.setHesg(WILD_CARD+qDto.getHesg()+WILD_CARD); 
+        }    
+        if (qDto.getLimit() == 0) {
+        	qDto.setLimit(DEFAULT_ROW_LIMIT); 
+        }
+        
+        return qDto;
+        
 	}
 
 	@Qualifier ("bridfDaoService")
