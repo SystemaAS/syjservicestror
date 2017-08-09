@@ -3,6 +3,7 @@ package no.systema.jservices.tror.controller;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,10 @@ public class TrorResponseOutputterController_HEADF {
 	/**
 	 * File: 	HEADF
 	 * 
-	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&csv=true&limit=50
+	 * @Example SELECT list http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&limit=50&csv=true
+	 * 
+	 * @Example SELECT
+	 *          specific: http://gw.systema.no:8080/syjservicestror/syjsHEADF.do?user=OSCAR&heavd=1&heopd=100
 	 * 
 	 */
 	@RequestMapping(value="syjsHEADF.do", method={RequestMethod.GET, RequestMethod.POST})
@@ -42,7 +46,9 @@ public class TrorResponseOutputterController_HEADF {
 		JsonResponseWriter2<HeadfDao> jsonWriter = new JsonResponseWriter2<HeadfDao>();
 		CSVOutputter<HeadfDao> csvOutputter = new CSVOutputter<HeadfDao>();
 		StringBuffer sb = new StringBuffer();
-		List<HeadfDao> headfDaoList = null;
+		List<HeadfDao> headfDaoList = new ArrayList<HeadfDao>();
+		String heavd = request.getParameter("heavd");
+		String heopd = request.getParameter("heopd");
 		
 		try {
 			logger.info("Inside syjsHEADF.do");		
@@ -56,12 +62,17 @@ public class TrorResponseOutputterController_HEADF {
 			String status = "ok";
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
-			if ((userName != null && !"".equals(userName))) {
-				if(StringUtils.hasValue(limit)){
-					//discrete number of rows
-					headfDaoList = headfDaoService.findAll(null, limit);
-				}else{
-					headfDaoList = headfDaoService.findAll(null);
+			if (StringUtils.hasValue(userName)) {
+				if (StringUtils.hasValue(heavd) && StringUtils.hasValue(heopd)) {
+					HeadfDao dao = fetchRecord(heavd, heopd);
+					headfDaoList.add(dao);
+				} else {
+					if(StringUtils.hasValue(limit)){
+						//discrete number of rows
+						headfDaoList = headfDaoService.findAll(null, limit);
+					}else{
+						headfDaoList = headfDaoService.findAll(null);
+					}
 				}
 				if (headfDaoList != null) {
 					if (StringUtils.hasValue(csv)) {
@@ -93,6 +104,13 @@ public class TrorResponseOutputterController_HEADF {
 		session.invalidate();
 		return sb.toString();
 
+	}
+
+	private HeadfDao fetchRecord(String heavd, String heopd) {
+		int avd = Integer.parseInt(heavd);
+		int opd = Integer.parseInt(heopd);
+		HeadfDao dao = headfDaoService.find(avd, opd);
+		return dao;
 	}
 
 	/**
