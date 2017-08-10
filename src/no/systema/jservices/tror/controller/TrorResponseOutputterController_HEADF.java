@@ -116,7 +116,7 @@ public class TrorResponseOutputterController_HEADF {
 	/**
 	 * File: 	HEADF
 	 * 
-	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF_LITE.do?user=OSCAR&limit=50&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna
+	 * @Example SELECT http://gw.systema.no:8080/syjservicestror/syjsHEADF_LITE.do?user=OSCAR&dftdg=5&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna
 	 * 
 	 */
 	@RequestMapping(value="syjsHEADF_LITE.do", method={RequestMethod.GET, RequestMethod.POST})
@@ -166,7 +166,7 @@ public class TrorResponseOutputterController_HEADF {
 
 	private HeadfDto getDto(HttpServletRequest request) {
 		String WILD_CARD = "%";
-		int DEFAULT_ROW_LIMIT = 500;
+		int DEFAULT_DAYS_TO_VIEW_IN_LIST = 7;
 		HeadfDto qDto = new HeadfDto();
 		ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
         binder.bind(request);
@@ -180,8 +180,8 @@ public class TrorResponseOutputterController_HEADF {
         if (qDto.getHesg() != null) {
         	qDto.setHesg(WILD_CARD+qDto.getHesg()+WILD_CARD); 
         }    
-        if (qDto.getLimit() == 0) {
-        	qDto.setLimit(DEFAULT_ROW_LIMIT); 
+        if (qDto.getDftdg() == 0) {
+        	qDto.setDftdg(DEFAULT_DAYS_TO_VIEW_IN_LIST); 
         }
         
         return qDto;
