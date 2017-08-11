@@ -62,10 +62,8 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
     <bean id="contextServletContextProvider" class="no.systema.main.context.JServicesServletContextProvider"></bean>  
 -->	
 	
-		
-<!--  
-	 application properties
-	<bean id="placeholderConfigMM" class="no.systema.main.util.ApplicationPropertiesUtil">
+	<!-- application properties -->
+	<bean id="placeholderConfigMM" class="no.systema.jservices.common.util.ApplicationPropertiesUtil">
     	<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     	<property name="locations">
     		<list>
@@ -73,7 +71,7 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
     		</list>
     	</property>
 	</bean>
--->	 
+
 	<bean id="dataTransactionManager"
   		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
   		scope="singleton">

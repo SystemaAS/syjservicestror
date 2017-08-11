@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,13 +25,15 @@ import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.HeadfDaoService;
 import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
+import no.systema.jservices.common.util.ApplicationPropertiesUtil;
 import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
 
 @Controller
 public class TrorResponseOutputterController_HEADF {
 	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_HEADF.class.getName());
-
+	private static String DAYS_TO_VIEW_DEFAULT = ApplicationPropertiesUtil.getProperty("no.systema.headf.daystoview.default");
+	
 	/**
 	 * File: 	HEADF
 	 * 
@@ -42,7 +45,7 @@ public class TrorResponseOutputterController_HEADF {
 	 */
 	@RequestMapping(value="syjsHEADF.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String doHeadf(HttpSession session, HttpServletRequest request) {
+	public String syjsHEADF(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<HeadfDao> jsonWriter = new JsonResponseWriter2<HeadfDao>();
 		CSVOutputter<HeadfDao> csvOutputter = new CSVOutputter<HeadfDao>();
 		StringBuffer sb = new StringBuffer();
@@ -121,7 +124,7 @@ public class TrorResponseOutputterController_HEADF {
 	 */
 	@RequestMapping(value="syjsHEADF_LITE.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String doHeadfLiteList(HttpSession session, HttpServletRequest request) {
+	public String syjsHEADF_LITE(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<HeadfDto> jsonWriter = new JsonResponseWriter2<HeadfDto>();
 		StringBuffer sb = new StringBuffer();
 		List<HeadfDto> headfDtoList = null;
@@ -164,9 +167,81 @@ public class TrorResponseOutputterController_HEADF {
 
 	}
 
+
+	/**
+	 * Update Database DML operations File: HEADF
+	 * 
+	 * @Example UPDATE:
+	 * 			http://gw.systema.no:8080/syjservicestror/syjsHEADF_U.do?user=OSCAR&heavd=2&heopd=100&hedtop=20170807&henas=Kalle&henak=knattarna....and all the rest...&mode=U/A/D
+	 *
+	 */
+	@RequestMapping(value = "syjsHEADF_U.do", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public String syjsHEADF_U(HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter2<HeadfDao> jsonWriter = new JsonResponseWriter2<HeadfDao>();
+		StringBuffer sb = new StringBuffer();
+		String userName = null;
+		String errMsg = null;
+		String status = null;
+		StringBuffer dbErrorStackTrace = null;
+
+		try {
+			logger.info("Inside syjsHEADF_U.do");
+			String user = request.getParameter("user");
+			String mode = request.getParameter("mode");
+			// Check ALWAYS user in BRIDF
+			userName = bridfDaoService.getUserName(user); 
+			errMsg = "";
+			status = "ok";
+			dbErrorStackTrace = new StringBuffer();
+			HeadfDao dao = new HeadfDao();
+			HeadfDao resultDao = new HeadfDao();
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+			binder.bind(request);
+			
+			//NOTE: No rulerLord, data i validated in client
+
+			if (userName != null && !"".equals(userName)) {
+				if ("D".equals(mode)) {
+					headfDaoService.delete(dao);
+				} else if ("A".equals(mode)) {
+					resultDao = headfDaoService.create(dao);
+				} else if ("U".equals(mode)) {
+					resultDao = headfDaoService.update(dao);
+				}
+				if (resultDao == null) {
+					errMsg = "ERROR on UPDATE ";
+					status = "error ";
+					dbErrorStackTrace.append("Could not add/update dao=" + ReflectionToStringBuilder.toString(dao));
+					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+				} else {
+					// OK UPDATE
+					sb.append(jsonWriter.setJsonSimpleValidResult(userName, status));
+				}
+
+			} else {
+				// write JSON error output
+				errMsg = "ERROR on UPDATE";
+				status = "error";
+				dbErrorStackTrace.append("request input parameters are invalid: <user>");
+				sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+			}
+
+		} catch (Exception e) {
+			errMsg = "ERROR on UPDATE ";
+			status = "error ";
+			logger.info("Error:",e);
+			dbErrorStackTrace.append(e.getMessage());
+			sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status,dbErrorStackTrace));
+		}
+		session.invalidate();
+		return sb.toString();
+
+	}
+	
+	
 	private HeadfDto getDto(HttpServletRequest request) {
 		String WILD_CARD = "%";
-		int DEFAULT_DAYS_TO_VIEW_IN_LIST = 7;
 		HeadfDto qDto = new HeadfDto();
 		ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
         binder.bind(request);
@@ -181,7 +256,7 @@ public class TrorResponseOutputterController_HEADF {
         	qDto.setHesg(WILD_CARD+qDto.getHesg()+WILD_CARD); 
         }    
         if (qDto.getDftdg() == 0) {
-        	qDto.setDftdg(DEFAULT_DAYS_TO_VIEW_IN_LIST); 
+        	qDto.setDftdg(Integer.valueOf(DAYS_TO_VIEW_DEFAULT)); 
         }
         
         return qDto;
