@@ -282,7 +282,6 @@ public class TrorResponseOutputterController_HEADF {
         }    
         if (qDto.getDftdg() == 0) {
         	qDto.setDftdg(Integer.valueOf(DAYS_TO_VIEW_DEFAULT)); 
-        	whereClause = true;
         }
         
         qDto.setWhereClause(whereClause);
