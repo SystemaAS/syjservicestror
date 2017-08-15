@@ -241,51 +241,24 @@ public class TrorResponseOutputterController_HEADF {
 	
 	
 	private HeadfDto getDto(HttpServletRequest request) {
-		boolean whereClause = false;
 		String WILD_CARD = "%";
 		HeadfDto qDto = new HeadfDto();
 		ServletRequestDataBinder binder = new ServletRequestDataBinder(qDto);
         binder.bind(request);
 
-        if( qDto.getHeavd() > 0){
-        	whereClause = true;
-        }
-        if (qDto.getHedtop() > 0) {
-        	whereClause = true;
-        }
-        if (qDto.getHeopd() > 0) {
-        	whereClause = true;
-        }
-        if (qDto.getHelks() != null) {
-        	whereClause = true;
-        }
-        if (qDto.getHepns() != null) {
-        	whereClause = true;
-        }
-        if (qDto.getHelkk() != null) {
-        	whereClause = true;
-        }
-        if (qDto.getHepnk() != null) {
-        	whereClause = true;
-        }        
         if (qDto.getHenas() != null)  {
         	qDto.setHenas(WILD_CARD+qDto.getHenas()+WILD_CARD);
-        	whereClause = true;
         }
         if (qDto.getHenak() != null) {
         	qDto.setHenak(WILD_CARD+qDto.getHenak()+WILD_CARD); 
-        	whereClause = true;
         }
         if (qDto.getHesg() != null) {
         	qDto.setHesg(WILD_CARD+qDto.getHesg()+WILD_CARD); 
-        	whereClause = true;
         }    
         if (qDto.getDftdg() == 0) {
         	qDto.setDftdg(Integer.valueOf(DAYS_TO_VIEW_DEFAULT)); 
         }
         
-        qDto.setWhereClause(whereClause);
-
         return qDto;
         
 	}
