@@ -216,7 +216,7 @@ public class TrorResponseOutputterController_HEADF {
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
 				} else {
 					// OK UPDATE
-					sb.append(jsonWriter.setJsonSimpleValidResult(userName, status));
+					sb.append(jsonWriter.setJsonResult_Common_GetComposite(userName, resultDao));	
 				}
 
 			} else {
