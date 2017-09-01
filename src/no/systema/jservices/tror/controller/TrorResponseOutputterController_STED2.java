@@ -37,6 +37,7 @@ public class TrorResponseOutputterController_STED2 {
 	 * 
 	 * @Example SELECT semi specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2lk=NO
 	 * @Example SELECT specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2kod=8000&st2lk=NO
+	 * @Example SELECT semi specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2kod=8000
 	 * @Example SELECT list: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR
 	 * 
 	 */
@@ -68,8 +69,7 @@ public class TrorResponseOutputterController_STED2 {
 						resultDao = sted2DaoService.find(dao);
 						sted2DaoList.add(resultDao);
 					} else {
-						params.put("st2kod", dao.getSt2kod());
-						sted2DaoList = sted2DaoService.findAll(params);
+						sted2DaoList = sted2DaoService.findByLike(dao.getSt2kod());
 					}
 				} else if (StringUtils.hasValue(dao.getSt2lk())){
 					params.put("st2lk", dao.getSt2lk());
