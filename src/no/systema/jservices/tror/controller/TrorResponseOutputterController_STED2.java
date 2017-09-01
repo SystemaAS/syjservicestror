@@ -67,7 +67,9 @@ public class TrorResponseOutputterController_STED2 {
 				if (StringUtils.hasValue(dao.getSt2kod())) {
 					if (StringUtils.hasValue(dao.getSt2lk())) {
 						resultDao = sted2DaoService.find(dao);
-						sted2DaoList.add(resultDao);
+						if (resultDao != null) {
+							sted2DaoList.add(resultDao);
+						}
 					} else {
 						sted2DaoList = sted2DaoService.findByLike(dao.getSt2kod());
 					}
