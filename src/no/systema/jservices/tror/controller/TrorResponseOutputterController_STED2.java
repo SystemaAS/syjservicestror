@@ -35,6 +35,7 @@ public class TrorResponseOutputterController_STED2 {
 	/**
 	 * File: 	STED2
 	 * 
+	 * @Example SELECT specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2lk=NO
 	 * @Example SELECT specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2kod=8000&st2lk=NO
 	 * @Example SELECT list: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR
 	 * 
@@ -54,6 +55,7 @@ public class TrorResponseOutputterController_STED2 {
 			String errMsg = "";
 			String status = "ok";
 			StringBuffer dbErrorStackTrace = new StringBuffer();
+			Map<String, Object> params = new HashMap<String, Object>();
 
 			if (StringUtils.hasValue(userName)) {
 				Sted2Dao resultDao = new Sted2Dao();
@@ -66,17 +68,19 @@ public class TrorResponseOutputterController_STED2 {
 						resultDao = sted2DaoService.find(dao);
 						sted2DaoList.add(resultDao);
 					} else {
-						Map<String, Object> params = new HashMap<String, Object>();
 						params.put("st2kod", dao.getSt2kod());
 						sted2DaoList = sted2DaoService.findAll(params);
 					}
+				} else if (StringUtils.hasValue(dao.getSt2lk())){
+					params.put("st2lk", dao.getSt2lk());
+					sted2DaoList = sted2DaoService.findAll(params);
 				} else {
 					sted2DaoList = sted2DaoService.findAll(null);
 				}
 				if (sted2DaoList != null) {
 					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, sted2DaoList));
 				} else {
-					errMsg = "ERROR on SELECT: Can not find KufastDao list";
+					errMsg = "ERROR on SELECT: Can not find Sted2Dao list";
 					status = "error";
 					logger.info(status + errMsg);
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));

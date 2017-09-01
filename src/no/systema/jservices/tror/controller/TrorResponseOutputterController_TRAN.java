@@ -42,7 +42,7 @@ public class TrorResponseOutputterController_TRAN {
 	 */
 	@RequestMapping(value = "syjsTRAN.do", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public String syjsSTED2(HttpSession session, HttpServletRequest request) {
+	public String syjsTRAN(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<TranDao> jsonWriter = new JsonResponseWriter2<TranDao>();
 		StringBuffer sb = new StringBuffer();
 		List<TranDao> tranDaoList = new ArrayList<TranDao>();
