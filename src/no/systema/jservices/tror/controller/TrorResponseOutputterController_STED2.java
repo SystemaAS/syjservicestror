@@ -35,7 +35,7 @@ public class TrorResponseOutputterController_STED2 {
 	/**
 	 * File: 	STED2
 	 * 
-	 * @Example SELECT specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2lk=NO
+	 * @Example SELECT semi specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2lk=NO
 	 * @Example SELECT specific: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR&st2kod=8000&st2lk=NO
 	 * @Example SELECT list: http://gw.systema.no:8080/syjservicestror/syjsSTED2.do?user=OSCAR
 	 * 
