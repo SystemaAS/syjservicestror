@@ -254,7 +254,10 @@ public class TrorResponseOutputterController_HEADF {
         }
         if (qDto.getHesg() != null) {
         	qDto.setHesg(WILD_CARD+qDto.getHesg()+WILD_CARD); 
-        }    
+        }
+        if (qDto.getHegn() != null) {
+        	qDto.setHegn(WILD_CARD+qDto.getHegn()+WILD_CARD); 
+        }
         if (qDto.getDftdg() == 0) {
         	qDto.setDftdg(Integer.valueOf(DAYS_TO_VIEW_DEFAULT)); 
         }
