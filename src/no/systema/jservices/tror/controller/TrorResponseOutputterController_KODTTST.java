@@ -43,7 +43,7 @@ public class TrorResponseOutputterController_KODTTST {
 	public String syjsKODTTST(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<KodttstDao> jsonWriter = new JsonResponseWriter2<KodttstDao>();
 		StringBuffer sb = new StringBuffer();
-		List<KodttstDao> tranDaoList = new ArrayList<KodttstDao>();
+		List<KodttstDao> kodttstDaoList = new ArrayList<KodttstDao>();
 
 		try {
 			logger.info("Inside syjsKODTTST");
@@ -62,12 +62,12 @@ public class TrorResponseOutputterController_KODTTST {
 
 				if (dao.getKtskod() > 0) {
 					resultDao = kodttstDaoService.find(dao);
-					tranDaoList.add(resultDao);
+					kodttstDaoList.add(resultDao);
 				} else {
-					tranDaoList = kodttstDaoService.findAll(null);
+					kodttstDaoList = kodttstDaoService.findAll(null);
 				}
-				if (tranDaoList != null) {
-					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, tranDaoList));
+				if (kodttstDaoList != null) {
+					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, kodttstDaoList));
 				} else {
 					errMsg = "ERROR on SELECT: Can not find KodttstDao list";
 					status = "error";
