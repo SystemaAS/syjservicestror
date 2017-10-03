@@ -154,10 +154,13 @@ public class TrorResponseOutputterController_DOKUF {
 
 			if (userName != null && !"".equals(userName)) {
 				if ("D".equals(mode)) {
+					//logger.info("DELETE DOKUF");
 					dokufDaoService.delete(dao);
 				} else if ("A".equals(mode)) {
+					//logger.info("CREATE NEW DOKUF");
 					resultDao = dokufDaoService.create(dao);
 				} else if ("U".equals(mode)) {
+					//logger.info("UPDATE DOKUF");
 					resultDao = dokufDaoService.update(dao);
 				}
 				if (resultDao == null) {
