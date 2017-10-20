@@ -20,11 +20,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import no.systema.jservices.model.dao.entities.HeadfStatusDao;
+import no.systema.jservices.model.dao.services.HeadfStatusDaoServices;
+
 import no.systema.jservices.common.dao.HeadfDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.HeadfDaoService;
 import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
+import no.systema.jservices.common.json.JsonResponseWriter;
 import no.systema.jservices.common.util.ApplicationPropertiesUtil;
 import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
@@ -238,8 +242,91 @@ public class TrorResponseOutputterController_HEADF {
 		return sb.toString();
 
 	}
+	/**
+	 * Update of columnd HEST (STATUS) in HEADF. LIGHT update with old technique
+	 * @param session
+	 * @param request
+	 * @return
+	 * 
+	 * http://gw.systema.no:8080/syjservicestror/syjsHEADF_STATUS_U.do?user=OSCARmode=U&heavd=1&heopd=184&hest=S
+	 */
+	@RequestMapping(value="syjsHEADF_STATUS_U.do", method={RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public String syjsR_U( HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter jsonWriter = new JsonResponseWriter();
+		StringBuffer sb = new StringBuffer();
+		
+		try{
+			logger.info("Inside syjsHEADF_STATUS_U.do");
+			//TEST-->logger.info("Servlet root:" + AppConstants.VERSION_SYJSERVICES);
+			String user = request.getParameter("user");
+			String mode = request.getParameter("mode");
+			//Check ALWAYS user in BRIDF
+            String userName = this.bridfDaoService.getUserName(user);
+            //DEBUG --> logger.info("USERNAME:" + userName + "XX");
+            String errMsg = "";
+			String status = "ok";
+			StringBuffer dbErrorStackTrace = new StringBuffer();
+			
+			//bind attributes is any
+			HeadfStatusDao dao = new HeadfStatusDao();
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+            binder.bind(request);
+            //rules
+            //XXXX rulerLord = new XXXX();
+			//Start processing now
+			if(userName!=null && !"".equals(userName)){
+				int dmlRetval = 0;
+				if("D".equals(mode)){
+					logger.info("DELETE ... NOT IMPLEMENTED");
+					
+				}else{
+					//do ADD
+					if("A".equals(mode)){
+						logger.info("INSERT ... NOT IMPLEMENTED");
+						
+					}else if("U".equals(mode)){
+						logger.info("Before UPDATE ...");
+						dmlRetval = this.headfStatusDaoServices.update(dao, dbErrorStackTrace);
+					}
+				}
+				//----------------------------------
+				//check returns from dml operations
+				//----------------------------------
+				if(dmlRetval<0){
+					//write JSON error output
+					errMsg = "ERROR on UPDATE: invalid?  Try to check: <DaoServices>.insert/update/delete";
+					status = "error";
+					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+				}else{
+					//OK UPDATE
+					sb.append(jsonWriter.setJsonSimpleValidResult(userName, status));
+				}
+				
+			}else{
+				//write JSON error output
+				errMsg = "ERROR on UPDATE";
+				status = "error";
+				dbErrorStackTrace.append("request input parameters are invalid: <user>, <other mandatory fields>");
+				sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+			}
+			
+		}catch(Exception e){
+			//write std.output error output
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			e.printStackTrace(printWriter);
+			return "ERROR [JsonResponseOutputterController]" + writer.toString();
+		}
+		session.invalidate();
+		return sb.toString();
+	}
 	
-	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
 	private HeadfDto getDto(HttpServletRequest request) {
 		String WILD_CARD = "%";
 		HeadfDto qDto = new HeadfDto();
@@ -279,6 +366,14 @@ public class TrorResponseOutputterController_HEADF {
 	@Required
 	public void setHeadfDaoService(HeadfDaoService value){ this.headfDaoService = value; }
 	public HeadfDaoService getHeadfDaoService(){ return this.headfDaoService; }		
+	
+	
+	@Qualifier ("headfStatusDaoServices")
+	private HeadfStatusDaoServices headfStatusDaoServices;
+	@Autowired
+	@Required
+	public void setHeadfStatusDaoServices(HeadfStatusDaoServices value){ this.headfStatusDaoServices = value; }
+	public HeadfStatusDaoServices getHeadfStatusDaoServices(){ return this.headfStatusDaoServices; }		
 	
 	
 }
