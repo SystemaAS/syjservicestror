@@ -248,7 +248,7 @@ public class TrorResponseOutputterController_HEADF {
 	 * @param request
 	 * @return
 	 * 
-	 * http://gw.systema.no:8080/syjservicestror/syjsHEADF_STATUS_U.do?user=OSCARmode=U&heavd=1&heopd=184&hest=S
+	 * http://gw.systema.no:8080/syjservicestror/syjsHEADF_STATUS_U.do?user=OSCAR&mode=U&heavd=1&heopd=184&hest=S
 	 */
 	@RequestMapping(value="syjsHEADF_STATUS_U.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
