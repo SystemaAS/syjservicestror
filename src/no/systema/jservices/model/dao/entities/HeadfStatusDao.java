@@ -19,7 +19,7 @@ public class HeadfStatusDao implements Serializable {
 
 	private String hest = null;                                
 	public void setHest (String value){ this.hest = value;   }   
-	public String getHest (){ return this.hest;   }              
+	public String getHest (){ return this.hest;  }              
         
 
 }
