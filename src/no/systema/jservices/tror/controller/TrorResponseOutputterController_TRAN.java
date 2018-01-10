@@ -134,15 +134,15 @@ public class TrorResponseOutputterController_TRAN {
 				TranDao dao = new TranDao();
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
-
+				//key
 				if (dao.getVmtran() > 0) {
+					
 					Map<String, Object> params = new HashMap<String, Object>();
 					params.put("vmtran", dao.getVmtran());
 					//we do this in order to update the whole record (easier in order to use the generic implementation)
 					tranDaoList = tranDaoService.findAll(params);
 					for(TranDao daoRecord: tranDaoList){
-						dao.setVmrecn(dao.getVmrecn() + 1);
-						tranDaoService.update(daoRecord);
+						tranDaoService.incrementCounter(daoRecord);
 					}
 				} 
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, tranDaoList));
