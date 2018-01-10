@@ -107,6 +107,63 @@ public class TrorResponseOutputterController_TRAN {
 		return sb.toString();
 
 	}
+	/**
+	 * http://gw.systema.no:8080/syjservicestror/syjsTRAN_U_COUNTER.do?user=OSCAR&vmtran=1000
+	 * 
+	 * @param session
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "syjsTRAN_U_COUNTER.do", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public String syjsTRAN_U_COUNTER(HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter2<TranDao> jsonWriter = new JsonResponseWriter2<TranDao>();
+		StringBuffer sb = new StringBuffer();
+		List<TranDao> tranDaoList = new ArrayList<TranDao>();
+
+		try {
+			logger.info("Inside syjsTRAN_U_COUNTER");
+			String user = request.getParameter("user");
+			// Check ALWAYS user in BRIDF
+			String userName = bridfDaoService.getUserName(user);
+			String errMsg = "";
+			String status = "ok";
+			StringBuffer dbErrorStackTrace = new StringBuffer();
+
+			if (StringUtils.hasValue(userName)) {
+				TranDao dao = new TranDao();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+				binder.bind(request);
+
+				if (dao.getVmtran() > 0) {
+					Map<String, Object> params = new HashMap<String, Object>();
+					params.put("vmtran", dao.getVmtran());
+					//we do this in order to update the whole record (easier in order to use the generic implementation)
+					tranDaoList = tranDaoService.findAll(params);
+					for(TranDao daoRecord: tranDaoList){
+						dao.setVmrecn(dao.getVmrecn() + 1);
+						tranDaoService.update(daoRecord);
+					}
+				} 
+				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, tranDaoList));
+				
+			} else {
+				errMsg = "ERROR on SELECT";
+				status = "error";
+				dbErrorStackTrace.append("request input parameters are invalid: <user>");
+				sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+			}
+		} catch (Exception e) {
+			logger.info("Error :", e);
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			e.printStackTrace(printWriter);
+			return "ERROR [JsonResponseOutputterController]" + writer.toString();
+		}
+
+		session.invalidate();
+		return sb.toString();
+	}
 
 	@Qualifier("bridfDaoService")
 	private BridfDaoService bridfDaoService;
