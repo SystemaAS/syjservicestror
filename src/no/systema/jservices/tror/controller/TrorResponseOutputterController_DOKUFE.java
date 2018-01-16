@@ -52,11 +52,11 @@ public class TrorResponseOutputterController_DOKUFE {
 		StringBuffer sb = new StringBuffer();
 		List<DokufeDao> dokufeDaoList = new ArrayList<DokufeDao>();
 		String user = request.getParameter("user");
-		String p_avd = request.getParameter("fe_dfavd");
+		/*String p_avd = request.getParameter("fe_dfavd");
 		String p_opd = request.getParameter("fe_dfopd");
 		String p_fbnr = request.getParameter("fe_dffbnr");
 		String p_n3035 = request.getParameter("fe_n3035");
-		
+		*/
 		try {
 			logger.info("Inside syjsDOKUFE.do");		
 			//String user = request.getParameter("user");
@@ -70,18 +70,37 @@ public class TrorResponseOutputterController_DOKUFE {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if (StringUtils.hasValue(userName)) {
-				if (StringUtils.hasValue(p_avd) && StringUtils.hasValue(p_opd)) {
+				DokufeDao dao = new DokufeDao();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+				binder.bind(request);
+				
+				
+				if (dao.getFe_dfavd() > 0 && dao.getFe_dfopd() >0) {
+					boolean isSingleRecord = false;
 					Map<String, Object> params = new HashMap<String, Object>();
-					params.put("fe_dfavd", Integer.parseInt(p_avd));
-					params.put("fe_dfopd", Integer.parseInt(p_opd));
+					params.put("fe_dfavd", dao.getFe_dfavd());
+					params.put("fe_dfopd", dao.getFe_dfopd());
 					//fraktbrev nr
-					if(StringUtils.hasValue(p_fbnr)){
-						params.put("fe_dffbnr", Integer.parseInt(p_fbnr));
+					if(dao.getFe_dffbnr() > 0){
+						params.put("fe_dffbnr", dao.getFe_dffbnr());
 					}
 					//party type = CN, CZ, DP ...
-					if(StringUtils.hasValue(p_fbnr)){
-						params.put("fe_n3035", p_n3035);
+					if(StringUtils.hasValue(dao.getFe_n3035()) ){
+						isSingleRecord = true;
+						params.put("fe_n3035", dao.getFe_n3035());
 					}
+					
+					if(isSingleRecord){
+						//use defualt keys
+					}else{
+						//this is in order to make the select wider than default keys... 
+						if(dao.getFe_dffbnr() > 0){
+							dao.setKeys(dao.getFe_dfavd(), dao.getFe_dfopd(), dao.getFe_dffbnr());
+						}else{
+							dao.setKeys(dao.getFe_dfavd(), dao.getFe_dfopd());
+						}
+					}
+					//get list
 					dokufeDaoList = dokufeDaoService.findAll(params);
 				}
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, dokufeDaoList));
@@ -141,6 +160,7 @@ public class TrorResponseOutputterController_DOKUFE {
 			//NOTE: No rulerLord, data i validated in client
 
 			if (userName != null && !"".equals(userName)) {
+				logger.info("mode:" + mode);
 				if ("D".equals(mode)) {
 					dokufeDaoService.delete(dao);
 				} else if ("A".equals(mode)) {
