@@ -75,10 +75,14 @@ public class TrorResponseOutputterController_DOKUFM {
 					params.put("fmopd", dao.getFmopd()); 
 					if(dao.getFmfbnr() > 0){
 						params.put("fmfbnr", dao.getFmfbnr());
+						if(dao.getFmmknr() > 0){
+							params.put("fmmknr", dao.getFmmknr());
+							dao.setKeys(dao.getFmavd(), dao.getFmopd(), dao.getFmfbnr(), dao.getFmmknr());
+						}
 					}else{
 						dao.setKeys(dao.getFmavd(), dao.getFmopd());
 					}
-				
+					
 					//get list
 					dokufeDaoList = dokufmDaoService.findAll(params);
 				}
