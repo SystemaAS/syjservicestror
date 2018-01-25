@@ -30,14 +30,12 @@ import no.systema.jservices.common.util.StringUtils;
 
 @Controller
 public class TrorResponseOutputterController_DOKUFM {
+	
 	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_DOKUFM.class.getName());
 	
 	/**
 	 * File: 	DOKUFM
-	 * 
-	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsDOKUFM.do?user=OSCAR&fmavd=1&fmopd=52919&fmfbnr=1
-	 * 
-	 * 
+	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsDOKUFM.do?user=OSCAR&fmavd=1&fmopd=52919&fmfbnr=1&fmmknr=2
 	 * 
 	 */
 	@RequestMapping(value="syjsDOKUFM.do", method={RequestMethod.GET, RequestMethod.POST})
@@ -47,16 +45,9 @@ public class TrorResponseOutputterController_DOKUFM {
 		StringBuffer sb = new StringBuffer();
 		List<DokufmDao> dokufeDaoList = new ArrayList<DokufmDao>();
 		String user = request.getParameter("user");
-		/*String p_avd = request.getParameter("fe_dfavd");
-		String p_opd = request.getParameter("fe_dfopd");
-		String p_fbnr = request.getParameter("fe_dffbnr");
-		String p_n3035 = request.getParameter("fe_n3035");
-		*/
+		
 		try {
 			logger.info("Inside syjsDOKUFM.do");		
-			//String user = request.getParameter("user");
-			//String csv = request.getParameter("csv");
-			//String limit = request.getParameter("limit");
 			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
