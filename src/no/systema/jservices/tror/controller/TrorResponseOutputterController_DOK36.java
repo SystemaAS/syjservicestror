@@ -129,7 +129,7 @@ public class TrorResponseOutputterController_DOK36 {
 				if ("D".equals(mode)) {
 					dok36DaoService.delete(dao);
 				} else if ("A".equals(mode)) {
-					resultDao = dok36DaoService.create(dao);
+					resultDao = dok36DaoService.createWithoutDulicateCheck(dao);
 				} 
 				if (resultDao == null) {
 					errMsg = "ERROR on UPDATE ";
@@ -155,6 +155,7 @@ public class TrorResponseOutputterController_DOK36 {
 			logger.info("Error:",e);
 			dbErrorStackTrace.append(e.getMessage());
 			sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status,dbErrorStackTrace));
+
 		}
 		session.invalidate();
 		return sb.toString();

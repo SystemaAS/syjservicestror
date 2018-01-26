@@ -40,7 +40,7 @@ public class TrorResponseOutputterController_DOK29 {
 	 */
 	@RequestMapping(value="syjsDOK29.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String syjsDOKUFE(HttpSession session, HttpServletRequest request) {
+	public String syjsDOK29(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<Dok29Dao> jsonWriter = new JsonResponseWriter2<Dok29Dao>();
 		StringBuffer sb = new StringBuffer();
 		List<Dok29Dao> dok29DaoList = new ArrayList<Dok29Dao>();
@@ -100,7 +100,7 @@ public class TrorResponseOutputterController_DOK29 {
 	 */
 	@RequestMapping(value = "syjsDOK29_U.do", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public String syjsDOKUFE_U(HttpSession session, HttpServletRequest request) {
+	public String syjsDOK29_U(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<Dok29Dao> jsonWriter = new JsonResponseWriter2<Dok29Dao>();
 		StringBuffer sb = new StringBuffer();
 		String userName = null;
@@ -129,7 +129,7 @@ public class TrorResponseOutputterController_DOK29 {
 				if ("D".equals(mode)) {
 					dok29DaoService.delete(dao);
 				} else if ("A".equals(mode)) {
-					resultDao = dok29DaoService.create(dao);
+					resultDao = dok29DaoService.createWithoutDulicateCheck(dao);
 				} 
 				if (resultDao == null) {
 					errMsg = "ERROR on UPDATE ";
@@ -155,6 +155,7 @@ public class TrorResponseOutputterController_DOK29 {
 			logger.info("Error:",e);
 			dbErrorStackTrace.append(e.getMessage());
 			sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status,dbErrorStackTrace));
+
 		}
 		session.invalidate();
 		return sb.toString();
