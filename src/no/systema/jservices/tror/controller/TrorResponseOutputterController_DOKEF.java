@@ -25,11 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import no.systema.jservices.common.dao.DokefDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.DokefDaoService;
-import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
-import no.systema.jservices.common.json.JsonResponseWriter;
-import no.systema.jservices.common.util.ApplicationPropertiesUtil;
-import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
 
 @Controller
@@ -47,21 +43,17 @@ public class TrorResponseOutputterController_DOKEF {
 	 */
 	@RequestMapping(value="syjsDOKEF.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String syjsDOKUFE(HttpSession session, HttpServletRequest request) {
+	public String syjsDOKEF(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<DokefDao> jsonWriter = new JsonResponseWriter2<DokefDao>();
 		StringBuffer sb = new StringBuffer();
-		List<DokefDao> dokufeDaoList = new ArrayList<DokefDao>();
+		List<DokefDao> dokefDaoList = new ArrayList<DokefDao>();
 		String user = request.getParameter("user");
-		/*String p_avd = request.getParameter("fe_dfavd");
-		String p_opd = request.getParameter("fe_dfopd");
-		String p_fbnr = request.getParameter("fe_dffbnr");
-		String p_n3035 = request.getParameter("fe_n3035");
-		*/
+		String dfavd = request.getParameter("dfavd");
+		String dfopd = request.getParameter("dfopd");
+		String dflop = request.getParameter("dflop");
+
 		try {
 			logger.info("Inside syjsDOKEF.do");		
-			//String user = request.getParameter("user");
-			//String csv = request.getParameter("csv");
-			//String limit = request.getParameter("limit");
 			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
@@ -69,36 +61,21 @@ public class TrorResponseOutputterController_DOKEF {
 			String status = "ok";
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
-			if (StringUtils.hasValue(userName)) {
-				DokefDao dao = new DokefDao();
-				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
-				binder.bind(request);
-				
-				
-				if (dao.getDfavd() > 0 && dao.getDfopd() >0) {
-					boolean isSingleRecord = false;
-					Map<String, Object> params = new HashMap<String, Object>();
-					params.put("dfavd", dao.getDfavd());
-					params.put("dfopd", dao.getDfopd());
-					//fraktbrev nr
-					if(dao.getDflop() > 0){
-						params.put("dflop", dao.getDflop());
-					}
-					
-					if(isSingleRecord){
-						//use defualt keys
-					}else{
-						//this is in order to make the select wider than default keys... 
-						if(dao.getDflop() > 0){
-							dao.setKeys(dao.getDfavd(), dao.getDfopd(), dao.getDflop());
-						}else{
-							dao.setKeys(dao.getDfavd(), dao.getDfopd());
-						}
-					}
-					//get list
-					dokufeDaoList = dokefDaoService.findAll(params);
+			if (StringUtils.hasValue(userName) && StringUtils.hasValue(dfavd) && StringUtils.hasValue(dfopd)) {
+				if (StringUtils.hasValue(dflop)) {
+					DokefDao dao = fetchRecord(dfavd, dfopd, dflop);
+					dokefDaoList.add(dao);
+				} else {
+					dokefDaoList = fetchRecords(dfavd, dfopd);
 				}
-				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, dokufeDaoList));
+				if (dokefDaoList != null) {
+					sb.append(jsonWriter.setJsonResult_Common_GetList(userName, dokefDaoList));
+				} else {
+					errMsg = "ERROR on SELECT: Can not find DokefDao list";
+					status = "error";
+					logger.info(status + errMsg);
+					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+				}
 				
 
 			} else {
@@ -120,9 +97,32 @@ public class TrorResponseOutputterController_DOKEF {
 
 	}
 
+	private List<DokefDao> fetchRecords(String dfavd, String dfopd) {
+		int avd = Integer.parseInt(dfavd);
+		int opd = Integer.parseInt(dfopd);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("dfavd", avd);
+		params.put("dfopd", opd);
+
+		List<DokefDao> daoList = dokefDaoService.findAll(params);
+		return daoList;
+	}
+
+	private DokefDao fetchRecord(String dfavd, String dfopd, String dflop) {
+		int avd = Integer.parseInt(dfavd);
+		int opd = Integer.parseInt(dfopd);
+		int fbnr = Integer.parseInt(dflop);
+		DokefDao qDao = new DokefDao();
+		qDao.setDfavd(avd);
+		qDao.setDfopd(opd);
+		qDao.setDflop(fbnr);
+
+		DokefDao dao = dokefDaoService.find(qDao);
+		return dao;
+	}	
 	
 	/**
-	 * Update Database DML operations File: DOKEFIM
+	 * Update Database DML operations File: DOKEF
 	 * 
 	 * @Example UPDATE:
 	 * 			http://gw.systema.no:8080/syjservicestror/syjsDOKEF_U.do?user=OSCAR&dfavd=1&dfopd=100&dflop=1....and all the rest...&mode=U/A/D
@@ -130,7 +130,7 @@ public class TrorResponseOutputterController_DOKEF {
 	 */
 	@RequestMapping(value = "syjsDOKEF_U.do", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public String syjsDOKUFE_U(HttpSession session, HttpServletRequest request) {
+	public String syjsDOKEF_U(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<DokefDao> jsonWriter = new JsonResponseWriter2<DokefDao>();
 		StringBuffer sb = new StringBuffer();
 		String userName = null;
