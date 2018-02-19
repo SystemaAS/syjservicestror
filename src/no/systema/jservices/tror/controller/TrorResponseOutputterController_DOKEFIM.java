@@ -41,22 +41,18 @@ public class TrorResponseOutputterController_DOKEFIM {
 	 * 
 	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsDOKEFIM.do?user=OSCAR&imavd=1&imopd=52919&imlop=1
 	 * 
-	 * Could be a list with several records (several flyfraktbrev
+	 * Could be a list with several records (several flyfraktbrev)
 	 * 
 	 * 
 	 */
 	@RequestMapping(value="syjsDOKEFIM.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String syjsDOKUFE(HttpSession session, HttpServletRequest request) {
+	public String syjsDOKEFIM(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<DokefimDao> jsonWriter = new JsonResponseWriter2<DokefimDao>();
 		StringBuffer sb = new StringBuffer();
-		List<DokefimDao> dokufeDaoList = new ArrayList<DokefimDao>();
+		List<DokefimDao> dokefimDaoList = new ArrayList<DokefimDao>();
 		String user = request.getParameter("user");
-		/*String p_avd = request.getParameter("fe_dfavd");
-		String p_opd = request.getParameter("fe_dfopd");
-		String p_fbnr = request.getParameter("fe_dffbnr");
-		String p_n3035 = request.getParameter("fe_n3035");
-		*/
+		
 		try {
 			logger.info("Inside syjsDOKEFIM.do");		
 			//String user = request.getParameter("user");
@@ -73,7 +69,6 @@ public class TrorResponseOutputterController_DOKEFIM {
 				DokefimDao dao = new DokefimDao();
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
-				
 				
 				if (dao.getImavd() > 0 && dao.getImopd() >0) {
 					boolean isSingleRecord = false;
@@ -96,9 +91,9 @@ public class TrorResponseOutputterController_DOKEFIM {
 						}
 					}
 					//get list
-					dokufeDaoList = dokefimDaoService.findAll(params);
+					dokefimDaoList = dokefimDaoService.findAll(params);
 				}
-				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, dokufeDaoList));
+				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, dokefimDaoList));
 				
 
 			} else {
@@ -130,7 +125,7 @@ public class TrorResponseOutputterController_DOKEFIM {
 	 */
 	@RequestMapping(value = "syjsDOKEFIM_U.do", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public String syjsDOKUFE_U(HttpSession session, HttpServletRequest request) {
+	public String syjsDOKEFIM_U(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<DokefimDao> jsonWriter = new JsonResponseWriter2<DokefimDao>();
 		StringBuffer sb = new StringBuffer();
 		String userName = null;
@@ -192,7 +187,6 @@ public class TrorResponseOutputterController_DOKEFIM {
 		return sb.toString();
 
 	}
-	
 	
 
 	@Qualifier ("bridfDaoService")
