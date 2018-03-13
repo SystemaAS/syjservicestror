@@ -54,7 +54,7 @@ public class TrorResponseOutputterController_KODTFS {
 				if (kodtflpDaoList != null) {
 						sb.append(jsonWriter.setJsonResult_Common_GetList(userName, kodtflpDaoList));
 				} else {
-					errMsg = "ERROR on SELECT: Can not find KodtfrDao list";
+					errMsg = "ERROR on SELECT: Can not find KodtfsDao list";
 					status = "error";
 					logger.info( status + errMsg);
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
