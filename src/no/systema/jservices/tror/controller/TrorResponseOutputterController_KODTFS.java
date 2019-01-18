@@ -3,7 +3,9 @@ package no.systema.jservices.tror.controller;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,11 +23,12 @@ import no.systema.jservices.common.dao.KodtfsDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.KodtfsDaoService;
 import no.systema.jservices.common.json.JsonResponseWriter2;
+import no.systema.jservices.common.util.StringUtils;
 
 @Controller
 public class TrorResponseOutputterController_KODTFS {
 	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_KODTFS.class.getName());
-
+	
 	/**
 	 * File: 	KODTFS
 	 * 
@@ -42,6 +45,8 @@ public class TrorResponseOutputterController_KODTFS {
 		try {
 			logger.info("Inside syjsKODTFS.do");
 			String user = request.getParameter("user");
+			String kfsfnr = request.getParameter("kfsfnr");
+			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
 			String errMsg = "";
@@ -49,7 +54,13 @@ public class TrorResponseOutputterController_KODTFS {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if ((userName != null && !"".equals(userName))) {
-				kodtflpDaoList = kodtfsDaoService.findAll(null);
+				if(StringUtils.hasValue(kfsfnr)){
+					Map<String, Object> params = new HashMap<String, Object>();
+					params.put("kfsfnr", kfsfnr);
+					kodtflpDaoList = kodtfsDaoService.findAll(params);
+				}else{
+					kodtflpDaoList = kodtfsDaoService.findAll(null);
+				}
 				//logger.info("SIZE:" + kodtflpDaoList.size());
 				if (kodtflpDaoList != null) {
 						sb.append(jsonWriter.setJsonResult_Common_GetList(userName, kodtflpDaoList));
