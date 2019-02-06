@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import no.systema.jservices.common.dao.IsufDao;
+import no.systema.jservices.common.dao.NctfDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
-import no.systema.jservices.common.dao.services.IsufDaoService;
+import no.systema.jservices.common.dao.services.NctfDaoService;
 import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
 import no.systema.jservices.common.json.JsonResponseWriter;
@@ -33,27 +33,27 @@ import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
 
 @Controller
-public class TrorResponseOutputterController_ISUF {
-	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_ISUF.class.getName());
+public class TrorResponseOutputterController_NCTF {
+	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_NCTF.class.getName());
 	
 	/**
-	 * File: 	ISUF - Flyfraktbrev export - Tradevision Issuing carrier file table
+	 * File: 	NCTF - Flyfraktbrev export - Tradevision Not-valid city codes table
 	 * 
-	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsISUF.do?user=OSCAR&isprf=LH...
+	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsNCTF.do?user=OSCAR&...
 	 * 
 	 * 
 	 * 
 	 */
-	@RequestMapping(value="syjsISUF.do", method={RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value="syjsNCTF.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
 	public String syjsSELECT(HttpSession session, HttpServletRequest request) {
-		JsonResponseWriter2<IsufDao> jsonWriter = new JsonResponseWriter2<IsufDao>();
+		JsonResponseWriter2<NctfDao> jsonWriter = new JsonResponseWriter2<NctfDao>();
 		StringBuffer sb = new StringBuffer();
-		List<IsufDao> daoList = new ArrayList<IsufDao>();
+		List<NctfDao> daoList = new ArrayList<NctfDao>();
 		String user = request.getParameter("user");
 		
 		try {
-			logger.info("Inside syjsISUF.do");		
+			logger.info("Inside syjsNCTF.do");		
 			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
@@ -62,16 +62,16 @@ public class TrorResponseOutputterController_ISUF {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if (StringUtils.hasValue(userName)) {
-				IsufDao dao = new IsufDao();
+				NctfDao dao = new NctfDao();
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
 				//get list
-				if(dao.getIsprf()>0){
+				if(StringUtils.hasValue(dao.getNccicd())){
 					Map<String, Object> params = new HashMap<String, Object>();
 					params = dao.getKeys();
-					daoList = isufDaoService.findAll(params);
+					daoList = nctfDaoService.findAll(params);
 				}else{
-					daoList = isufDaoService.findAll(null);
+					daoList = nctfDaoService.findAll(null);
 				}
 
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, daoList));
@@ -107,12 +107,12 @@ public class TrorResponseOutputterController_ISUF {
 	public BridfDaoService getBridfDaoService(){ return this.bridfDaoService; }	
 
 	
-	@Qualifier ("isufDaoService")
-	private IsufDaoService isufDaoService;
+	@Qualifier ("nctfDaoService")
+	private NctfDaoService nctfDaoService;
 	@Autowired
 	@Required
-	public void setIsufDaoService(IsufDaoService value){ this.isufDaoService = value; }
-	public IsufDaoService getIsufDaoService(){ return this.isufDaoService; }		
+	public void setNctfDaoService(NctfDaoService value){ this.nctfDaoService = value; }
+	public NctfDaoService getNctfDaoService(){ return this.nctfDaoService; }		
 	
 	
 }
