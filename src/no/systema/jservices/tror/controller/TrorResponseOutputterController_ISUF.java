@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import no.systema.jservices.common.dao.LocfDao;
+import no.systema.jservices.common.dao.IsufDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
-import no.systema.jservices.common.dao.services.LocfDaoService;
+import no.systema.jservices.common.dao.services.IsufDaoService;
 import no.systema.jservices.common.dto.HeadfDto;
 import no.systema.jservices.common.json.JsonResponseWriter2;
 import no.systema.jservices.common.json.JsonResponseWriter;
@@ -33,33 +33,27 @@ import no.systema.jservices.common.util.CSVOutputter;
 import no.systema.jservices.common.util.StringUtils;
 
 @Controller
-public class TrorResponseOutputterController_LOCF {
-	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_LOCF.class.getName());
+public class TrorResponseOutputterController_ISUF {
+	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_ISUF.class.getName());
 	
 	/**
-	 * File: 	LOCF - Flyfraktbrev export - Tradevision user-id table
+	 * File: 	PARF - Flyfraktbrev export - Tradevision Issuing carrier file table
 	 * 
-	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsLOCF.do?user=OSCAR
+	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsISUF.do?user=OSCAR&isprf=LH...
 	 * 
-	 * Only allowed: perfect match of user
 	 * 
 	 * 
 	 */
-	@RequestMapping(value="syjsLOCF.do", method={RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value="syjsISUF.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String syjsDOKEFIM(HttpSession session, HttpServletRequest request) {
-		JsonResponseWriter2<LocfDao> jsonWriter = new JsonResponseWriter2<LocfDao>();
+	public String syjsSELECT(HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter2<IsufDao> jsonWriter = new JsonResponseWriter2<IsufDao>();
 		StringBuffer sb = new StringBuffer();
-		List<LocfDao> locfDaoList = new ArrayList<LocfDao>();
+		List<IsufDao> daoList = new ArrayList<IsufDao>();
 		String user = request.getParameter("user");
-		String all = request.getParameter("all");
-		
 		
 		try {
-			logger.info("Inside syjsLOCF.do");		
-			//String user = request.getParameter("user");
-			//String csv = request.getParameter("csv");
-			//String limit = request.getParameter("limit");
+			logger.info("Inside syjsISUF.do");		
 			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
@@ -68,16 +62,19 @@ public class TrorResponseOutputterController_LOCF {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if (StringUtils.hasValue(userName)) {
-				LocfDao dao = new LocfDao();
-				if(!StringUtils.hasValue(all)){
-					dao.setLoid(user);
-					//get list
-					locfDaoList = locfDaoService.findAll(dao.getKeys());
+				IsufDao dao = new IsufDao();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+				binder.bind(request);
+				//get list
+				if(dao.getIsprf()>0){
+					Map<String, Object> params = new HashMap<String, Object>();
+					params = dao.getKeys();
+					daoList = isufDaoService.findAll(params);
 				}else{
-					locfDaoList = locfDaoService.findAll(null);
+					daoList = isufDaoService.findAll(null);
 				}
-				
-				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, locfDaoList));
+
+				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, daoList));
 				
 
 			} else {
@@ -110,12 +107,12 @@ public class TrorResponseOutputterController_LOCF {
 	public BridfDaoService getBridfDaoService(){ return this.bridfDaoService; }	
 
 	
-	@Qualifier ("locfDaoService")
-	private LocfDaoService locfDaoService;
+	@Qualifier ("isufDaoService")
+	private IsufDaoService isufDaoService;
 	@Autowired
 	@Required
-	public void setLocfDaoService(LocfDaoService value){ this.locfDaoService = value; }
-	public LocfDaoService getLocfDaoService(){ return this.locfDaoService; }		
+	public void setIsufDaoService(IsufDaoService value){ this.isufDaoService = value; }
+	public IsufDaoService getIsufDaoService(){ return this.isufDaoService; }		
 	
 	
 }
