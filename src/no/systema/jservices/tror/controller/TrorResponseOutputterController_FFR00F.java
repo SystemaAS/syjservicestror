@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import no.systema.jservices.common.dao.CnffDao;
 import no.systema.jservices.common.dao.Ffr00fDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.Ffr00fDaoService;
@@ -65,8 +66,17 @@ public class TrorResponseOutputterController_FFR00F {
 			StringBuffer dbErrorStackTrace = new StringBuffer();
 
 			if (StringUtils.hasValue(userName)) {
-				//get list
-				ffr00fDaoList = ffr00fDaoService.findAll(null);
+				Ffr00fDao dao = new Ffr00fDao();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+				binder.bind(request);
+				//alternatives
+				if(dao.getF0211()>0 && dao.getF0213()>0){
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeysAwb());
+				}else if(dao.getF00rec()>0){
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeys());
+				}else{
+					ffr00fDaoList = ffr00fDaoService.findAll(null);
+				}
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDaoList));
 				
 			} else {

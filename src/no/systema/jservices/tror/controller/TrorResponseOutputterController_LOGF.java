@@ -70,9 +70,9 @@ public class TrorResponseOutputterController_LOGF {
 				binder.bind(request);
 				//get list
 				if(StringUtils.hasValue(dao.getLgid())){
-					//TODO
-				}else if(dao.getLgrecn()>0){
-					//TODO
+					daoList = logfDaoService.findAll(dao.getKeys());
+				}else if(dao.getLgrecn()>=0){
+					daoList = logfDaoService.findAll(dao.getKeysLgRecn());
 				}else{
 					daoList = logfDaoService.findAll(null);
 				}
