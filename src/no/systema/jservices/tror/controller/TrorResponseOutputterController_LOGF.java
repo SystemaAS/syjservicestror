@@ -68,11 +68,17 @@ public class TrorResponseOutputterController_LOGF {
 				LogfDao dao = new LogfDao();
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
+				
 				//get list
-				if(StringUtils.hasValue(dao.getLgid())){
+				if(StringUtils.hasValue(dao.getLgref2())){
+					daoList = logfDaoService.findAll(dao.getKeysLgref2());
+					
+				}else if(StringUtils.hasValue(dao.getLgid())){
 					daoList = logfDaoService.findAll(dao.getKeys());
+					
 				}else if(dao.getLgrecn()>=0){
 					daoList = logfDaoService.findAll(dao.getKeysLgRecn());
+					
 				}else{
 					daoList = logfDaoService.findAll(null);
 				}
