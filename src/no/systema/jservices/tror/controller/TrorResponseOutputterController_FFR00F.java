@@ -52,6 +52,7 @@ public class TrorResponseOutputterController_FFR00F {
 		StringBuffer sb = new StringBuffer();
 		List<Ffr00fDao> ffr00fDaoList = new ArrayList<Ffr00fDao>();
 		String user = request.getParameter("user");
+		String all = request.getParameter("all");
 		
 		try {
 			logger.info("Inside syjsFFR00F.do");		
@@ -70,12 +71,12 @@ public class TrorResponseOutputterController_FFR00F {
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
 				//alternatives
-				if(dao.getF0211()>0 && dao.getF0213()>0){
-					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeysAwb());
-				}else if(dao.getF00rec()>0){
-					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeys());
-				}else{
+				if(StringUtils.hasValue(all)){
 					ffr00fDaoList = ffr00fDaoService.findAll(null);
+				}else if(dao.getF0211()>=0 && dao.getF0213()>=0){
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeysAwb());
+				}else if(dao.getF00rec()>=0){
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeys());
 				}
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDaoList));
 				
