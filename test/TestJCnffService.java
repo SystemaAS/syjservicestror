@@ -29,7 +29,7 @@ public class TestJCnffService {
 
 	@Test
 	public void findRecord() {
-		int result = service.getCnrecnAndIncrement();
+		int result = service.getCnrecnAfterIncrement();
 		assertTrue(result>0);
 		System.out.println(result);
 	}
