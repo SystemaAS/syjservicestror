@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import no.systema.jservices.common.dao.CnffDao;
+import no.systema.jservices.common.dao.DokefDao;
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.CnffDaoService;
 import no.systema.jservices.common.dto.HeadfDto;
@@ -76,10 +77,8 @@ public class TrorResponseOutputterController_CNFF {
 				}else{
 					daoList = cnffDaoService.findAll(null);
 				}
-
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, daoList));
 				
-
 			} else {
 				errMsg = "ERROR on SELECT";
 				status = "error";
@@ -99,7 +98,6 @@ public class TrorResponseOutputterController_CNFF {
 
 	}
 
-	
 	
 
 	@Qualifier ("bridfDaoService")
