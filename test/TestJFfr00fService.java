@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import no.systema.jservices.common.dao.Ffr00fDao;
+import no.systema.jservices.common.dto.Ffr00fDto;
 import no.systema.jservices.common.dao.services.Ffr00fDaoService;
 import no.systema.jservices.common.dao.services.CnffDaoService;
 
@@ -43,15 +44,15 @@ public class TestJFfr00fService {
 		System.out.println(result.toString());
 	}*/
 	
-	/*
+	
 	@Test
 	public void create() {
 		int _211 = Integer.valueOf(prefix);
 		int _213 = Integer.valueOf(awb);
-		Ffr00fDao dao = new Ffr00fDao();
-		dao.setF0211(_211);
-		dao.setF0213(_213);
-		dao.setF00rec(cnffDaoService.getCnrecnAfterIncrement());
+		Ffr00fDto dao = new Ffr00fDto();
+		dao.setF0211(String.valueOf(_211));
+		dao.setF0213(String.valueOf(_213));
+		dao.setF00rec( (String.valueOf(cnffDaoService.getCnrecnAfterIncrement())) );
 		//List result = service.findAll(dao.getKeysAwb());
 		Ffr00fDao resultDao = service.create(dao);
 		//assertTrue(result!=null);
@@ -59,6 +60,7 @@ public class TestJFfr00fService {
 		System.out.println(resultDao.toString());
 	}
 	
+	/*
 	@Test
 	public void update() {
 		String f00rec = "162220";
@@ -76,10 +78,10 @@ public class TestJFfr00fService {
 		System.out.println(resultDao.toString());
 	}*/
 	
-	
+	/*
 	@Test
 	public void delete() {
-		String f00rec = "162222";
+		String f00rec = "162227";
 		int _f00 = Integer.valueOf(f00rec);
 		Ffr00fDao dao = new Ffr00fDao();
 		dao.setF00rec(_f00);
@@ -89,7 +91,7 @@ public class TestJFfr00fService {
 		assertTrue(dao==null);
 		System.out.println("OK delete");
 	}
-	
+	*/
 	
 
 }

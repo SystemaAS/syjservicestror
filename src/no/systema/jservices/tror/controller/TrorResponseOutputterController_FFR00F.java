@@ -127,9 +127,9 @@ public class TrorResponseOutputterController_FFR00F {
 			errMsg = "";
 			status = "ok";
 			dbErrorStackTrace = new StringBuffer();
-			Ffr00fDao dao = new Ffr00fDao();
+			Ffr00fDto dto = new Ffr00fDto();
 			Ffr00fDao resultDao = new Ffr00fDao();
-			ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(dto);
 			binder.bind(request);
 			
 			//NOTE: No rulerLord, data i validated in client
@@ -137,8 +137,8 @@ public class TrorResponseOutputterController_FFR00F {
 				logger.info("mode:" + mode);
 				
 				if ("D".equals(mode)) {
-					if(dao.getF00rec()>0){
-						this.ffr00fDaoService.delete(dao);
+					if(StringUtils.hasValue(dto.getF00rec())){
+						this.ffr00fDaoService.delete(dto);
 					}else{
 						logger.info("ERROR on delete::: id(f00rec) == 0");
 					}
@@ -147,18 +147,18 @@ public class TrorResponseOutputterController_FFR00F {
 					logger.info("Create new...");
 					//prepare for create/update
 					int keyId = this.cnffDaoService.getCnrecnAfterIncrement();
-					dao.setF00rec(keyId);
-					resultDao = this.ffr00fDaoService.create(dao);
+					dto.setF00rec(String.valueOf(keyId));
+					resultDao = this.ffr00fDaoService.create(dto);
 					
 				} else if ( "U".equals(mode)) {
 					logger.info("Update ...");
-					resultDao = this.ffr00fDaoService.update(dao);
+					//TODO resultDao = this.ffr00fDaoService.update(dao);
 				}
 				//deal with the results
 				if (resultDao == null) {
 					errMsg = "ERROR on UPDATE ";
 					status = "error ";
-					dbErrorStackTrace.append("Could not add/update dao=" + ReflectionToStringBuilder.toString(dao));
+					dbErrorStackTrace.append("Could not add/update dao=" + ReflectionToStringBuilder.toString(dto));
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
 				} else {
 					// OK UPDATE
