@@ -49,12 +49,12 @@ public class TestJFfr00fService {
 	public void create() {
 		int _211 = Integer.valueOf(prefix);
 		int _213 = Integer.valueOf(awb);
-		Ffr00fDto dao = new Ffr00fDto();
-		dao.setF0211(String.valueOf(_211));
-		dao.setF0213(String.valueOf(_213));
-		dao.setF00rec( (String.valueOf(cnffDaoService.getCnrecnAfterIncrement())) );
-		//List result = service.findAll(dao.getKeysAwb());
-		Ffr00fDao resultDao = service.create(dao);
+		Ffr00fDto dto = new Ffr00fDto();
+		dto.setF0211(String.valueOf(_211));
+		dto.setF0213(String.valueOf(_213));
+		dto.setF00rec( (String.valueOf(cnffDaoService.getCnrecnAfterIncrement())) );
+		//List result = service.findAll(dto.getKeysAwb());
+		Ffr00fDao resultDao = service.create(dto);
 		//assertTrue(result!=null);
 		assertTrue(resultDao!=null);
 		System.out.println(resultDao.toString());
@@ -66,12 +66,12 @@ public class TestJFfr00fService {
 		String f00rec = "162220";
 		//
 		int _f00 = Integer.valueOf(f00rec);
-		Ffr00fDao dao = new Ffr00fDao();
-		dao.setF00rec(_f00);
-		//List result = service.findAll(dao.getKeysAwb());
-		Ffr00fDao target = service.find(dao);
+		Ffr00fDao dto = new Ffr00fDao();
+		dto.setF00rec(_f00);
+		//List result = service.findAll(dto.getKeysAwb());
+		Ffr00fDao target = service.find(dto);
 		target.setF0221("OSL");
-		//List result = service.findAll(dao.getKeysAwb());
+		//List result = service.findAll(dto.getKeysAwb());
 		Ffr00fDao resultDao = service.update(target);
 		//assertTrue(result!=null);
 		assertTrue(resultDao!=null);
@@ -81,12 +81,16 @@ public class TestJFfr00fService {
 	/*
 	@Test
 	public void delete() {
-		String f00rec = "162227";
+		String f00rec = "TODO";
 		int _f00 = Integer.valueOf(f00rec);
+		Ffr00fDto dto = new Ffr00fDto();
+		dto.setF00rec(f00rec);
+		//1-delete
+		service.delete(dto);
+		
+		//2-check if not-exists
 		Ffr00fDao dao = new Ffr00fDao();
 		dao.setF00rec(_f00);
-		//List result = service.findAll(dao.getKeysAwb());
-		service.delete(dao);
 		dao = service.find(dao);
 		assertTrue(dao==null);
 		System.out.println("OK delete");
