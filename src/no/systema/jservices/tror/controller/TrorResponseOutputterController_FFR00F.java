@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -23,7 +24,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import no.systema.jservices.common.dao.Ffr00fDao;
+import no.systema.jservices.common.dao.Ffr03fDao;
+import no.systema.jservices.common.dao.Ffr04fDao;
+import no.systema.jservices.common.dao.Ffr08fDao;
+import no.systema.jservices.common.dao.Ffr10fDao;
+import no.systema.jservices.common.dao.Ffr11fDao;
+import no.systema.jservices.common.dao.modelmapper.converter.DaoConverter;
 import no.systema.jservices.common.dto.Ffr00fDto;
+import no.systema.jservices.common.dao.facade.Ffr00fDaoFacade;
+
 import no.systema.jservices.common.dao.services.BridfDaoService;
 import no.systema.jservices.common.dao.services.CnffDaoService;
 import no.systema.jservices.common.dao.services.Ffr00fDaoService;
@@ -37,6 +46,8 @@ import no.systema.jservices.common.util.StringUtils;
 @Controller
 public class TrorResponseOutputterController_FFR00F {
 	private static final Logger logger = Logger.getLogger(TrorResponseOutputterController_FFR00F.class.getName());
+	private ModelMapper modelMapper = new ModelMapper();
+	private DaoConverter daoConverter = new DaoConverter();
 	
 	/**
 	 * File: 	FFR00F - Flyfraktbrev export - Tradevision main parent table
@@ -138,7 +149,9 @@ public class TrorResponseOutputterController_FFR00F {
 				
 				if ("D".equals(mode)) {
 					if(StringUtils.hasValue(dto.getF00rec())){
-						this.ffr00fDaoService.delete(dto);
+						//populate facade
+						Ffr00fDaoFacade facade = this.getFacade(dto);
+						this.ffr00fDaoService.delete(dto, facade);
 					}else{
 						logger.info("ERROR on delete::: id(f00rec) == 0");
 					}
@@ -148,17 +161,22 @@ public class TrorResponseOutputterController_FFR00F {
 					//prepare for create/update
 					int keyId = this.cnffDaoService.getCnrecnAfterIncrement();
 					dto.setF00rec(String.valueOf(keyId));
-					resultDao = this.ffr00fDaoService.create(dto);
+					//populate facade
+					Ffr00fDaoFacade facade = this.getFacade(dto);
+					resultDao = this.ffr00fDaoService.create(dto, facade);
 					
 				} else if ( "U".equals(mode)) {
 					logger.info("Update ...");
-					//TODO resultDao = this.ffr00fDaoService.update(dao);
+					//populate facade
+					Ffr00fDaoFacade facade = this.getFacade(dto);
+					//resultDao = this.ffr00fDaoService.create(dto, facade);
+
 				}
 				//deal with the results
 				if (resultDao == null) {
 					errMsg = "ERROR on UPDATE ";
 					status = "error ";
-					dbErrorStackTrace.append("Could not add/update dao=" + ReflectionToStringBuilder.toString(dto));
+					dbErrorStackTrace.append("Could not add/update dto=" + ReflectionToStringBuilder.toString(dto));
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
 				} else {
 					// OK UPDATE
@@ -184,7 +202,18 @@ public class TrorResponseOutputterController_FFR00F {
 		return sb.toString();
 
 	}
-	
+	/**
+	 * populate children
+	 * @param dto
+	 * @return
+	 */
+	private Ffr00fDaoFacade getFacade(Ffr00fDto dto){
+		Ffr00fDaoFacade facade = new Ffr00fDaoFacade(dto);
+		facade.setFfr00fDao((Ffr00fDao)facade.getDao(Ffr00fDao.class));
+		facade.setFfr03fDao((Ffr03fDao)facade.getDao(Ffr03fDao.class));
+		
+		return facade;
+	}
 	@Qualifier ("bridfDaoService")
 	private BridfDaoService bridfDaoService;
 	@Autowired

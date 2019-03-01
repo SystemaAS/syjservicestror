@@ -6,9 +6,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import no.systema.jservices.common.dao.Ffr00fDao;
+import no.systema.jservices.common.dao.Ffr03fDao;
+
+import no.systema.jservices.common.dao.facade.Ffr00fDaoFacade;
 import no.systema.jservices.common.dto.Ffr00fDto;
 import no.systema.jservices.common.dao.services.Ffr00fDaoService;
 import no.systema.jservices.common.dao.services.CnffDaoService;
+import org.modelmapper.ModelMapper;
+import no.systema.jservices.common.dao.modelmapper.converter.DaoConverter;
 
 import java.util.*;
 
@@ -20,6 +25,9 @@ public class TestJFfr00fService {
 	ApplicationContext context = null;
 	String prefix = "177"; //77 - 117
 	String awb = "81140743"; //97957440 - 81140743
+	//
+	//private ModelMapper modelMapper = new ModelMapper();
+	//private DaoConverter daoConverter = new DaoConverter();
 	
 	
 	@Before
@@ -47,6 +55,7 @@ public class TestJFfr00fService {
 	
 	@Test
 	public void create() {
+		/*
 		int _211 = Integer.valueOf(prefix);
 		int _213 = Integer.valueOf(awb);
 		Ffr00fDto dto = new Ffr00fDto();
@@ -54,8 +63,21 @@ public class TestJFfr00fService {
 		dto.setF0213(String.valueOf(_213));
 		dto.setF00rec( (String.valueOf(cnffDaoService.getCnrecnAfterIncrement())) );
 		//List result = service.findAll(dto.getKeysAwb());
-		Ffr00fDao resultDao = service.create(dto);
+		Ffr00fDao resultDao = service.create(dto, modelMapper, daoConverter);
 		//assertTrue(result!=null);
+		assertTrue(resultDao!=null);
+		System.out.println(resultDao.toString());
+		*/
+		Ffr00fDto dto = new Ffr00fDto();
+		dto.setF0211(prefix);
+		dto.setF0213(awb);
+		dto.setF00rec( (String.valueOf(cnffDaoService.getCnrecnAfterIncrement())) );
+		//Facade for ModelMapper
+		Ffr00fDaoFacade facade = new Ffr00fDaoFacade(dto);
+		facade.setFfr00fDao((Ffr00fDao)facade.getDao(Ffr00fDao.class));
+		facade.setFfr03fDao((Ffr03fDao)facade.getDao(Ffr03fDao.class));
+		//
+		Ffr00fDao resultDao = service.create(dto, facade);
 		assertTrue(resultDao!=null);
 		System.out.println(resultDao.toString());
 	}
@@ -72,7 +94,7 @@ public class TestJFfr00fService {
 		Ffr00fDao target = service.find(dto);
 		target.setF0221("OSL");
 		//List result = service.findAll(dto.getKeysAwb());
-		Ffr00fDao resultDao = service.update(target);
+		Ffr00fDao resultDao = service.update(target, modelMapper, daoConverter);
 		//assertTrue(result!=null);
 		assertTrue(resultDao!=null);
 		System.out.println(resultDao.toString());
