@@ -122,7 +122,7 @@ public class TrorResponseOutputterController_FFR00F {
 	@RequestMapping(value = "syjsFFR00F_U.do", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public String syjsFFR00F_U(HttpSession session, HttpServletRequest request) {
-		JsonResponseWriter2<Ffr00fDao> jsonWriter = new JsonResponseWriter2<Ffr00fDao>();
+		JsonResponseWriter2<Ffr00fDto> jsonWriter = new JsonResponseWriter2<Ffr00fDto>();
 		StringBuffer sb = new StringBuffer();
 		String userName = null;
 		String errMsg = null;
@@ -139,18 +139,20 @@ public class TrorResponseOutputterController_FFR00F {
 			status = "ok";
 			dbErrorStackTrace = new StringBuffer();
 			Ffr00fDto dto = new Ffr00fDto();
-			Ffr00fDao resultDao = new Ffr00fDao();
+			Ffr00fDao dao = new Ffr00fDao();
+			Ffr00fDto resultDto = new Ffr00fDto();
 			ServletRequestDataBinder binder = new ServletRequestDataBinder(dto);
 			binder.bind(request);
 			
 			//NOTE: No rulerLord, data i validated in client
 			if (userName != null && !"".equals(userName)) {
 				logger.info("mode:" + mode);
+				Ffr00fDaoFacade facade = null;;
 				
 				if ("D".equals(mode)) {
 					if(StringUtils.hasValue(dto.getF00rec())){
 						//populate facade
-						Ffr00fDaoFacade facade = this.getFacade(dto);
+						facade = this.getFacade(dto);
 						this.ffr00fDaoService.delete(dto, facade);
 					}else{
 						logger.info("ERROR on delete::: id(f00rec) == 0");
@@ -162,25 +164,26 @@ public class TrorResponseOutputterController_FFR00F {
 					int keyId = this.cnffDaoService.getCnrecnAfterIncrement();
 					dto.setF00rec(String.valueOf(keyId));
 					//populate facade
-					Ffr00fDaoFacade facade = this.getFacade(dto);
-					resultDao = this.ffr00fDaoService.create(dto, facade);
+					facade = this.getFacade(dto);
+					dao = this.ffr00fDaoService.create(dto, facade);
 					
 				} else if ( "U".equals(mode)) {
 					logger.info("Update ...");
 					//populate facade
-					Ffr00fDaoFacade facade = this.getFacade(dto);
-					//resultDao = this.ffr00fDaoService.create(dto, facade);
+					facade = this.getFacade(dto);
+					dao = this.ffr00fDaoService.update(dto, facade);
 
 				}
 				//deal with the results
-				if (resultDao == null) {
+				if (dao == null) {
 					errMsg = "ERROR on UPDATE ";
 					status = "error ";
 					dbErrorStackTrace.append("Could not add/update dto=" + ReflectionToStringBuilder.toString(dto));
 					sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
 				} else {
 					// OK UPDATE
-					sb.append(jsonWriter.setJsonResult_Common_GetComposite(userName, resultDao));	
+					resultDto = facade.getDto();
+					sb.append(jsonWriter.setJsonResult_Common_GetComposite(userName, resultDto));	
 				}
 
 			} else {
