@@ -57,9 +57,10 @@ public class TrorResponseOutputterController_FFR00F {
 	 * 
 	 * 
 	 */
+	/*
 	@RequestMapping(value="syjsFFR00F.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
-	public String syjsDOKEFIM(HttpSession session, HttpServletRequest request) {
+	public String syjsFFR00F(HttpSession session, HttpServletRequest request) {
 		JsonResponseWriter2<Ffr00fDao> jsonWriter = new JsonResponseWriter2<Ffr00fDao>();
 		StringBuffer sb = new StringBuffer();
 		List<Ffr00fDao> ffr00fDaoList = new ArrayList<Ffr00fDao>();
@@ -110,7 +111,71 @@ public class TrorResponseOutputterController_FFR00F {
 		return sb.toString();
 
 	}
+	*/
 
+	/**
+	 * File: 	FFR00F - Flyfraktbrev export - Tradevision main parent table
+	 * 
+	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsFFR00F.do?user=OSCAR...
+	 * 
+	 *
+	 */
+	
+	@RequestMapping(value="syjsFFR00F.do", method={RequestMethod.GET, RequestMethod.POST})
+	@ResponseBody
+	public String syjsFFR00F(HttpSession session, HttpServletRequest request) {
+		JsonResponseWriter2<Ffr00fDto> jsonWriter = new JsonResponseWriter2<Ffr00fDto>();
+		StringBuffer sb = new StringBuffer();
+		List<Ffr00fDto> ffr00fDtoList = new ArrayList<Ffr00fDto>();
+		String user = request.getParameter("user");
+		String all = request.getParameter("all");
+		
+		try {
+			logger.info("Inside syjsFFR00F.do");		
+			//String user = request.getParameter("user");
+			//String csv = request.getParameter("csv");
+			//String limit = request.getParameter("limit");
+			
+			// Check ALWAYS user in BRIDF
+			String userName = bridfDaoService.getUserName(user); 
+			String errMsg = "";
+			String status = "ok";
+			StringBuffer dbErrorStackTrace = new StringBuffer();
+
+			if (StringUtils.hasValue(userName)) {
+				Ffr00fDao dao = new Ffr00fDao();
+				Ffr00fDto dto = new Ffr00fDto();
+				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
+				binder.bind(request);
+				//alternatives
+				if(StringUtils.hasValue(all)){
+					//ffr00fDtoList = ffr00fDaoService.findAll(null);
+				}else if(dao.getF0211()>=0 && dao.getF0213()>=0){
+					ffr00fDtoList = ffr00fDaoService.findAll(dao.getKeysAwb(), new Ffr00fDaoFacade(dto));
+				}else if(dao.getF00rec()>=0){
+					//ffr00fDtoList = ffr00fDaoService.findAll(dao.getKeys());
+				}
+				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDtoList));
+				
+			} else {
+				errMsg = "ERROR on SELECT";
+				status = "error";
+				dbErrorStackTrace.append(" request input parameters are invalid: <user>");
+				sb.append(jsonWriter.setJsonSimpleErrorResult(userName, errMsg, status, dbErrorStackTrace));
+			}
+		} catch (Exception e) {
+			logger.info("Error :", e);
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			e.printStackTrace(printWriter);
+			return "ERROR [JsonResponseOutputterController]" + writer.toString();
+		}
+
+		session.invalidate();
+		return sb.toString();
+
+	}
+	
 	/**
 	 * 
 	 * @Example SELECT list http://localhost:8080/syjservicestror/syjsFFR00F.do?user=OSCAR...
@@ -147,7 +212,7 @@ public class TrorResponseOutputterController_FFR00F {
 			//NOTE: No rulerLord, data i validated in client
 			if (userName != null && !"".equals(userName)) {
 				logger.info("mode:" + mode);
-				Ffr00fDaoFacade facade = null;;
+				Ffr00fDaoFacade facade = null;
 				
 				if ("D".equals(mode)) {
 					if(StringUtils.hasValue(dto.getF00rec())){
