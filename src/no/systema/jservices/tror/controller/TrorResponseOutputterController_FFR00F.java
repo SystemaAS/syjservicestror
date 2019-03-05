@@ -124,17 +124,14 @@ public class TrorResponseOutputterController_FFR00F {
 	@RequestMapping(value="syjsFFR00F.do", method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
 	public String syjsFFR00F(HttpSession session, HttpServletRequest request) {
-		JsonResponseWriter2<Ffr00fDto> jsonWriter = new JsonResponseWriter2<Ffr00fDto>();
+		JsonResponseWriter2<Ffr00fDao> jsonWriter = new JsonResponseWriter2<Ffr00fDao>();
 		StringBuffer sb = new StringBuffer();
-		List<Ffr00fDto> ffr00fDtoList = new ArrayList<Ffr00fDto>();
+		List<Ffr00fDao> ffr00fDaoList = new ArrayList<Ffr00fDao>();
 		String user = request.getParameter("user");
 		String all = request.getParameter("all");
 		
 		try {
 			logger.info("Inside syjsFFR00F.do");		
-			//String user = request.getParameter("user");
-			//String csv = request.getParameter("csv");
-			//String limit = request.getParameter("limit");
 			
 			// Check ALWAYS user in BRIDF
 			String userName = bridfDaoService.getUserName(user); 
@@ -144,18 +141,17 @@ public class TrorResponseOutputterController_FFR00F {
 
 			if (StringUtils.hasValue(userName)) {
 				Ffr00fDao dao = new Ffr00fDao();
-				Ffr00fDto dto = new Ffr00fDto();
 				ServletRequestDataBinder binder = new ServletRequestDataBinder(dao);
 				binder.bind(request);
 				//alternatives
 				if(StringUtils.hasValue(all)){
 					//ffr00fDtoList = ffr00fDaoService.findAll(null);
 				}else if(dao.getF0211()>=0 && dao.getF0213()>=0){
-					ffr00fDtoList = ffr00fDaoService.findAll(dao.getKeysAwb(), new Ffr00fDaoFacade(dto));
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeysAwb());
 				}else if(dao.getF00rec()>=0){
 					//ffr00fDtoList = ffr00fDaoService.findAll(dao.getKeys());
 				}
-				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDtoList));
+				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDaoList));
 				
 			} else {
 				errMsg = "ERROR on SELECT";
@@ -218,7 +214,7 @@ public class TrorResponseOutputterController_FFR00F {
 					if(StringUtils.hasValue(dto.getF00rec())){
 						//populate facade
 						facade = this.getFacade(dto);
-						this.ffr00fDaoService.delete(dto, facade);
+						//this.ffr00fDaoService.delete(dto, facade);
 					}else{
 						logger.info("ERROR on delete::: id(f00rec) == 0");
 					}
@@ -230,13 +226,13 @@ public class TrorResponseOutputterController_FFR00F {
 					dto.setF00rec(String.valueOf(keyId));
 					//populate facade
 					facade = this.getFacade(dto);
-					dao = this.ffr00fDaoService.create(dto, facade);
+					//dao = this.ffr00fDaoService.create(dto, facade);
 					
 				} else if ( "U".equals(mode)) {
 					logger.info("Update ...");
 					//populate facade
 					facade = this.getFacade(dto);
-					dao = this.ffr00fDaoService.update(dto, facade);
+					//dao = this.ffr00fDaoService.update(dto, facade);
 
 				}
 				//deal with the results
@@ -282,6 +278,8 @@ public class TrorResponseOutputterController_FFR00F {
 		
 		return facade;
 	}
+	
+	
 	@Qualifier ("bridfDaoService")
 	private BridfDaoService bridfDaoService;
 	@Autowired

@@ -50,12 +50,12 @@ public class TestJFfr00fService {
 		//assertTrue(result!=null);
 		assertTrue(result.size()>0);
 		System.out.println(result.toString());
-	}*/
+	}
 	
 	
 	@Test
 	public void create() {
-		/*
+	
 		int _211 = Integer.valueOf(prefix);
 		int _213 = Integer.valueOf(awb);
 		Ffr00fDto dto = new Ffr00fDto();
@@ -67,7 +67,7 @@ public class TestJFfr00fService {
 		//assertTrue(result!=null);
 		assertTrue(resultDao!=null);
 		System.out.println(resultDao.toString());
-		*/
+		
 		Ffr00fDto dto = new Ffr00fDto();
 		dto.setF0211(prefix);
 		dto.setF0213(awb);
@@ -82,7 +82,6 @@ public class TestJFfr00fService {
 		System.out.println(resultDao.toString());
 	}
 	
-	/*
 	@Test
 	public void update() {
 		String f00rec = "162220";
