@@ -145,11 +145,11 @@ public class TrorResponseOutputterController_FFR00F {
 				binder.bind(request);
 				//alternatives
 				if(StringUtils.hasValue(all)){
-					//ffr00fDtoList = ffr00fDaoService.findAll(null);
+					ffr00fDaoList = ffr00fDaoService.findAll(null);
 				}else if(dao.getF0211()>=0 && dao.getF0213()>=0){
 					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeysAwb());
 				}else if(dao.getF00rec()>=0){
-					//ffr00fDtoList = ffr00fDaoService.findAll(dao.getKeys());
+					ffr00fDaoList = ffr00fDaoService.findAll(dao.getKeys());
 				}
 				sb.append(jsonWriter.setJsonResult_Common_GetList(userName, ffr00fDaoList));
 				
@@ -214,7 +214,7 @@ public class TrorResponseOutputterController_FFR00F {
 					if(StringUtils.hasValue(dto.getF00rec())){
 						//populate facade
 						facade = this.getFacade(dto);
-						//this.ffr00fDaoService.delete(dto, facade);
+						this.ffr00fDaoService.delete(dto, facade);
 					}else{
 						logger.info("ERROR on delete::: id(f00rec) == 0");
 					}
@@ -226,13 +226,13 @@ public class TrorResponseOutputterController_FFR00F {
 					dto.setF00rec(String.valueOf(keyId));
 					//populate facade
 					facade = this.getFacade(dto);
-					//dao = this.ffr00fDaoService.create(dto, facade);
+					dao = this.ffr00fDaoService.create(dto, facade);
 					
 				} else if ( "U".equals(mode)) {
 					logger.info("Update ...");
 					//populate facade
 					facade = this.getFacade(dto);
-					//dao = this.ffr00fDaoService.update(dto, facade);
+					dao = this.ffr00fDaoService.update(dto, facade);
 
 				}
 				//deal with the results
@@ -271,6 +271,7 @@ public class TrorResponseOutputterController_FFR00F {
 	 * @param dto
 	 * @return
 	 */
+	
 	private Ffr00fDaoFacade getFacade(Ffr00fDto dto){
 		Ffr00fDaoFacade facade = new Ffr00fDaoFacade(dto);
 		facade.setFfr00fDao((Ffr00fDao)facade.getDao(Ffr00fDao.class));
